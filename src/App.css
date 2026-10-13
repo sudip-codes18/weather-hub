@@ -1,0 +1,149 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,500;12..96,700&display=swap");
+
+/* ---------- Design tokens ----------
+   React only changes body[data-sky]; these variables swap the whole theme. */
+@property --sky-top    { syntax: "<color>"; inherits: true; initial-value: #5aa9e6; }
+@property --sky-bottom { syntax: "<color>"; inherits: true; initial-value: #cfe8ff; }
+
+:root {
+  --sky-top: #5aa9e6;
+  --sky-bottom: #cfe8ff;
+  --ink: #0f2233;
+  --ink-soft: rgba(15, 34, 51, .68);
+  --glass: rgba(255, 255, 255, .42);
+  --glass-border: rgba(255, 255, 255, .6);
+  --error: #b3261e;
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --font: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+body[data-sky="clear-night"] { --sky-top: #0b1030; --sky-bottom: #3a3f8f; --ink: #f2f4ff; --ink-soft: rgba(242,244,255,.72); --glass: rgba(255,255,255,.1); --glass-border: rgba(255,255,255,.22); --error: #ffb4ab; }
+body[data-sky="cloudy"]      { --sky-top: #7f93a6; --sky-bottom: #d6dee6; }
+body[data-sky="rain"]        { --sky-top: #34495e; --sky-bottom: #8ea3b5; --ink: #f4f8fb; --ink-soft: rgba(244,248,251,.75); --glass: rgba(255,255,255,.14); --glass-border: rgba(255,255,255,.28); --error: #ffb4ab; }
+body[data-sky="snow"]        { --sky-top: #a9c3dc; --sky-bottom: #f1f6fb; }
+body[data-sky="storm"]       { --sky-top: #1d1b2e; --sky-bottom: #5b4f78; --ink: #f3f0fa; --ink-soft: rgba(243,240,250,.74); --glass: rgba(255,255,255,.1); --glass-border: rgba(255,255,255,.22); --error: #ffb4ab; }
+body[data-sky="fog"]         { --sky-top: #a7b1ba; --sky-bottom: #e4e8ea; }
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box; margin: 0; }
+html, #root { min-height: 100%; }
+body {
+  min-height: 100vh;
+  font-family: var(--font);
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--sky-top), var(--sky-bottom)) fixed;
+  transition: --sky-top 1s ease, --sky-bottom 1s ease, color .6s ease;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+}
+#root { width: 100%; display: grid; place-items: center; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+
+.app { width: 100%; max-width: 460px; display: grid; gap: 18px; }
+
+/* ---------- Search ---------- */
+.search {
+  display: flex; gap: 8px; padding: 6px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.search input {
+  flex: 1; min-width: 0;
+  background: none; border: 0; outline: 0;
+  padding: 12px 18px; font-size: 1.05rem;
+}
+.search input::placeholder { color: var(--ink-soft); }
+.search:focus-within { box-shadow: 0 0 0 3px var(--ink); }
+.search button {
+  border: 0; cursor: pointer;
+  padding: 0 22px; border-radius: 999px;
+  background: var(--ink); color: var(--sky-bottom);
+  font-weight: 700;
+  transition: transform .15s ease, opacity .2s;
+}
+body[data-sky="clear-night"] .search button,
+body[data-sky="rain"] .search button,
+body[data-sky="storm"] .search button { color: var(--sky-top); }
+.search button:active { transform: scale(.95); }
+.search button:disabled { opacity: .5; cursor: wait; }
+
+/* ---------- Weather card ---------- */
+.card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 28px 26px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  animation: rise .5s cubic-bezier(.2, .8, .2, 1);
+}
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+
+.place { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.place h1 { font-size: 1.6rem; font-weight: 700; line-height: 1.15; }
+.place p { color: var(--ink-soft); margin-top: 4px; }
+
+.unit-toggle { display: flex; border: 1px solid var(--glass-border); border-radius: 999px; padding: 3px; flex-shrink: 0; }
+.unit-toggle button { border: 0; background: none; cursor: pointer; padding: 6px 12px; border-radius: 999px; font-weight: 500; }
+.unit-toggle button[aria-pressed="true"] { background: var(--ink); color: var(--sky-bottom); }
+body[data-sky="clear-night"] .unit-toggle button[aria-pressed="true"],
+body[data-sky="rain"] .unit-toggle button[aria-pressed="true"],
+body[data-sky="storm"] .unit-toggle button[aria-pressed="true"] { color: var(--sky-top); }
+
+.now { display: flex; align-items: center; gap: 18px; margin: 22px 0 6px; }
+.now .icon { font-size: 4.2rem; line-height: 1; }
+.temp {
+  font-size: clamp(5.5rem, 24vw, 7.5rem);
+  font-weight: 300;
+  font-variation-settings: "opsz" 96;
+  line-height: .9;
+  letter-spacing: -.04em;
+}
+.temp sup { font-size: .32em; font-weight: 500; vertical-align: top; position: relative; top: .35em; margin-left: 4px; letter-spacing: 0; }
+.condition { font-size: 1.2rem; font-weight: 500; }
+
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 24px 0; }
+.stat { padding: 12px; border-radius: var(--radius-md); background: rgba(255,255,255,.12); }
+.stat span { display: block; font-size: .8rem; color: var(--ink-soft); }
+.stat strong { font-size: 1.15rem; font-weight: 700; }
+
+.forecast { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; text-align: center; }
+.day { padding: 10px 2px; border-radius: 14px; }
+.day:first-child { background: rgba(255,255,255,.18); }
+.day .name { font-size: .85rem; color: var(--ink-soft); }
+.day .emoji { font-size: 1.6rem; margin: 6px 0; }
+.day .hi { font-weight: 700; }
+.day .lo { color: var(--ink-soft); font-size: .9rem; }
+
+/* ---------- Messages ---------- */
+.message {
+  text-align: center; padding: 36px 24px;
+  background: var(--glass); border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.message .big { font-size: 2.6rem; }
+.message h2 { font-size: 1.4rem; margin: 8px 0 6px; }
+.message p { color: var(--ink-soft); }
+.message.error h2 { color: var(--error); }
+
+.spinner {
+  width: 38px; height: 38px; margin: 0 auto 12px;
+  border: 4px solid var(--glass-border); border-top-color: var(--ink);
+  border-radius: 50%; animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+@media (max-width: 380px) {
+  .stats { grid-template-columns: 1fr 1fr; }
+  .now .icon { font-size: 3rem; }
+}
